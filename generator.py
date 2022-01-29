@@ -50,23 +50,27 @@ parser.set_defaults(static=True)
 parser.set_defaults(collision=True)
 
 
-# СОЗДАЕМ ПУТЬ
+# УДАЛЯЕМ ПРЕДЫДУЩУЮ ГЕНЕРАЦИЮ
 str_dict_out = args.dict.replace('ARUCO', 'ArUco')
 str_dict_out = str_dict_out.replace('APRILTAG', 'AprilTag')
 rmtree('./models', True)
-for i in range(args.num):
-    makedirs(f'./models/{str_dict_out}_{i}/collada')
+""" for i in range(args.num):
+    makedirs(f'./models/{str_dict_out}_{i}/collada') """
 
 
 # СОЗДАЕМ ТЕКСТУРУ
 marker_dict = cv2.aruco.Dictionary_get(MARKER_DICTS.get(args.dict))  # Словарь
-for i in range(args.num):
-    img = np.zeros((504, 504), dtype="uint8")  # min, 504 % 6,7,7,9 == 0
-    cv2.aruco.drawMarker(marker_dict, i, 504, img)
-    img = np.pad(img, 42, constant_values=255)  # рамка == marker/6/2
-    cv2.putText(img, f'{str_dict_out}_{i}', (10, 20),
-                cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1, cv2.LINE_AA)
-    cv2.imwrite(f'./models/{str_dict_out}_{i}/collada/marker.png', img)
+try:
+    for i in range(args.num):
+        img = np.zeros((504, 504), dtype="uint8")  # min, 504 % 6,7,7,9 == 0
+        cv2.aruco.drawMarker(marker_dict, i, 504, img)
+        img = np.pad(img, 42, constant_values=255)  # рамка == marker/6/2
+        cv2.putText(img, f'{str_dict_out}_{i}', (10, 20),
+                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1, cv2.LINE_AA)
+        makedirs(f'./models/{str_dict_out}_{i}/collada')
+        cv2.imwrite(f'./models/{str_dict_out}_{i}/collada/marker.png', img)
+except:
+    pass
 
 
 # СОЗДАЕМ ФАЙЛ .dae
@@ -87,10 +91,13 @@ with open('./template/marker.dae', 'r') as template:
     template.close
 text = text.replace('CHANGE MESH', str_mesh)
 
-for i in range(args.num):
-    with open(f'./models/{str_dict_out}_{i}/collada/marker.dae', 'w') as out_dae:
-        out_dae.write(text)
-        out_dae.close()
+try:
+    for i in range(args.num):
+        with open(f'./models/{str_dict_out}_{i}/collada/marker.dae', 'w') as out_dae:
+            out_dae.write(text)
+            out_dae.close()
+except:
+    pass
 
 # СОЗДАЕМ ФАЙЛ .sdf
 str_static = str(args.static).lower()
@@ -109,15 +116,17 @@ else:
     remove_col_start = text.find('\n      <collision name="collision">')
     remove_col_stop = text.find('\n      <visual name="visual">')
     text = text[:remove_col_start] + text[remove_col_stop:]
-
-for i in range(args.num):
-    str_name = f'{str_dict_out} No.{i}'.replace('_', ' ')
-    str_visual = fr'model://{str_dict_out}_{i}/collada/marker.dae'
-    text_loop = text.replace('CHANGE NAME', str_name)
-    text_loop = text_loop.replace('CHANGE VISUAL', str_visual)
-    with open(f'./models/{str_dict_out}_{i}/model.sdf', 'w') as out_sdf:
-        out_sdf.write(text_loop)
-        out_sdf.close()
+try:
+    for i in range(args.num):
+        str_name = f'{str_dict_out} No.{i}'.replace('_', ' ')
+        str_visual = fr'model://{str_dict_out}_{i}/collada/marker.dae'
+        text_loop = text.replace('CHANGE NAME', str_name)
+        text_loop = text_loop.replace('CHANGE VISUAL', str_visual)
+        with open(f'./models/{str_dict_out}_{i}/model.sdf', 'w') as out_sdf:
+            out_sdf.write(text_loop)
+            out_sdf.close()
+except:
+    pass
 
 
 # СОЗДАЕМ ФАЙЛ .config
@@ -125,11 +134,14 @@ with open('./template/model.config', 'r') as template:
     text = template.read()
     template.close
 
-for i in range(args.num):
-    str_name = f'{str_dict_out} No.{i}'.replace('_', ' ')
-    text_loop = text.replace('CHANGE NAME', str_name)
-    with open(f'./models/{str_dict_out}_{i}/model.config', 'w') as out_config:
-        out_config.write(text_loop)
-        out_config.close()
+try:
+    for i in range(args.num):
+        str_name = f'{str_dict_out} No.{i}'.replace('_', ' ')
+        text_loop = text.replace('CHANGE NAME', str_name)
+        with open(f'./models/{str_dict_out}_{i}/model.config', 'w') as out_config:
+            out_config.write(text_loop)
+            out_config.close()
+except:
+    pass
 
 print('OK')
