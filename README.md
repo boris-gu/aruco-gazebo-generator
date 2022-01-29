@@ -1,4 +1,4 @@
-# aruco-gazebo-generator
+# marker-gazebo-generator
 Генератор моделей ArUco и AprilTag маркеров для симулятора Gazebo
 
 Пример запуска:
