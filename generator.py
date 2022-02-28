@@ -64,7 +64,7 @@ try:
     for i in range(args.num):
         img = np.zeros((504, 504), dtype="uint8")  # min, 504 % 6,7,7,9 == 0
         cv2.aruco.drawMarker(marker_dict, i, 504, img)
-        img = np.pad(img, 42, constant_values=255)  # рамка == marker/6/2
+        img = np.pad(img, 84, constant_values=255)  # рамка == marker/6
         cv2.putText(img, f'{str_dict_out}_{i}', (10, 20),
                     cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 1, cv2.LINE_AA)
         makedirs(f'./models/{str_dict_out}_{i}/collada')
@@ -75,7 +75,7 @@ except:
 
 # СОЗДАЕМ ФАЙЛ .dae
 # добавляем размер для рамки и /2 для центрирования
-point_xy = (args.size_xy + args.size_xy/6)/2
+point_xy = (args.size_xy + args.size_xy/3)/2
 # формируем строку с координатами вершин
 str_mesh = f'{-point_xy} {point_xy} {args.size_z}'
 str_mesh += f' {-point_xy} {point_xy} 0'
